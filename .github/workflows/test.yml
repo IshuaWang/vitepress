@@ -1,53 +1,29 @@
-name: Test
-
-env:
-  NODE_OPTIONS: --max-old-space-size=6144
-  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
-  VITEST_SEGFAULT_RETRY: 3
+name: Deploy to Halo
 
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
-
-permissions: {}
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.number || github.sha }}
-  cancel-in-progress: true
+    branches: [site]
 
 jobs:
-  test:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        node_version: [18, 20, 22]
-        include:
-          - os: windows-latest
-            node_version: 22
-
-    runs-on: ${{ matrix.os }}
-
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./template
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-
-      - name: Set node version to ${{ matrix.node_version }}
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v3
         with:
-          node-version: ${{ matrix.node_version }}
-          cache: pnpm
-
-      - name: Install deps
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+      - name: Install dependencies
         run: pnpm install
-
-      - name: Install Playwright
-        run: pnpm playwright install chromium
-
-      - name: Check
-        run: pnpm check
+      - name: Build
+        run: pnpm docs:build
+      - name: Deploy to Halo
+        run: |
+          npx halo-static-pages-deploy-cli deploy -e ${{ secrets.ENDPOINT }} -i ${{ secrets.ID }} -t ${{ secrets.PAT }} -f .vitepress/dist
