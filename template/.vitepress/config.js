@@ -2,7 +2,9 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  loader:  { '.js': 'jsx' },
+  esbuild: {
+    loader: "jsx",
+  },
   base: '/vitepress',
   title: <%= title %>,
   description: <%= description %><% if (defaultTheme) { %>,
