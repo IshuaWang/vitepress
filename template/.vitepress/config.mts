@@ -3,8 +3,8 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   base: '/vitepress',
-  title: <%= title %>,
-  description: <%= description %><% if (defaultTheme) { %>,
+  title: 'My Docs',
+  description: 'description',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
@@ -25,5 +25,5 @@ export default defineConfig({
     socialLinks: [
       { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
     ]
-  }<% } %>
+  }
 })
